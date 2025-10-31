@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@adapters/*": ["src/adapters/*"],
+      "@data/*": ["data/*"],
+      "@lib/*": ["src/*"]
+    },
+    "resolveJsonModule": true,
+    "types": ["vitest/globals"]
+  }
+}

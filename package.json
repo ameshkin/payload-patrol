@@ -1,0 +1,70 @@
+{
+  "name": "@ameshkin/payload-patrol",
+  "version": "0.0.1",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./adapters/zod": {
+      "types": "./dist/adapters/zod.d.ts",
+      "import": "./dist/adapters/zod.js",
+      "require": "./dist/adapters/zod.cjs"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "require": "./dist/react.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "react": ">=18 <20",
+    "react-dom": ">=18 <20",
+    "zod": ">=3.23.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "@types/react": "^19.0.0",
+    "@vitest/coverage-v8": "2.1.9",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.0.0",
+    "typescript": "^5.6.3",
+    "vite-tsconfig-paths": "^5.1.2",
+    "vitest": "^2.1.9",
+    "zod": "^3.23.8"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "tsup --config tsup.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "prepublishOnly": "npm run build && npm run typecheck && npm test",
+    "release:patch": "npm run ensure:clean && npm version patch && git push && git push --tags && npm publish --access public",
+    "release:minor": "npm run ensure:clean && npm version minor && git push && git push --tags && npm publish --access public",
+    "release:major": "npm run ensure:clean && npm version major && git push && git push --tags && npm publish --access public",
+    "ensure:clean": "git diff --quiet && git diff --cached --quiet"
+  }
+}

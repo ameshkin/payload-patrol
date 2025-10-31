@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "declaration": true,
+    "declarationMap": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@adapters/*": ["src/adapters/*"],
+      "@data/*": ["data/*"],
+      "@lib/*": ["src/*"]
+    },
+
+    "types": ["vitest/globals"]
+  },
+  "include": ["src", "data"]
+}
