@@ -1,8 +1,4 @@
-Here’s an updated, opinionated README that sets the vision (“super-components”), the architecture (headless core + thin UI wrappers), and concrete APIs (including `<Phone country flag />`). It also documents existing NPM options we can borrow from and why we’ll build on top of `libphonenumber-js`.
-
----
-
-# @ameshkin/payload-patrol
+# Payload Patrol
 
 Minimal, framework-agnostic input defense for web apps and APIs, with optional **super-components** for React/MUI that ship battle-tested UX patterns (phone, email, text) and built-in validation.
 
