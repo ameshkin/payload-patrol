@@ -1,4 +1,4 @@
-export type CheckName = "badwords" | "sql" | "scripts" | "html" | "limit" | (string & {});
+export type CheckName = "badwords" | "sql" | "scripts" | "html" | "limit" | "sentiment" | (string & {});
 export type AdapterMode = "block" | "warn" | "strip";
 
 export type CheckContext = {

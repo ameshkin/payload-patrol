@@ -1,4 +1,4 @@
-import type { CheckFn } from "../types";
+import type { CheckFn } from "../../../types";
 
 // Allow extremely limited markup; otherwise flag.
 const ALLOW = new Set(["b", "i", "u", "strong", "em", "br", "span"]);

@@ -1,4 +1,4 @@
-import type { CheckFn } from "../types";
+import type { CheckFn } from "../../../types";
 
 // Heuristic detection of SQL injection-y patterns.
 const suspicious = [

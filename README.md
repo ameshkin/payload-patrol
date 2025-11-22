@@ -1,14 +1,16 @@
 # Payload Patrol
 
-Minimal, framework-agnostic input defense for web apps and APIs, with optional **super-components** for React/MUI that ship battle-tested UX patterns (phone, email, text) and built-in validation.
+Minimal, framework-agnostic input defense for web apps and APIs, with optional React components (coming soon).
 
 * Detects common **SQLi/XSS** patterns
 * **Custom deny rules** and **optional profanity** checks
+* **Sentiment analysis** for mood detection
 * **Zod adapter** for schema-level validation
+* **Express/Hono middleware** for server-side validation
 * **Headless core** usable in Node/Edge runtimes
-* **UI layer (optional):** thin MUI wrappers like `<Phone />`, `<Text />` that add formatting, country pickers, masks, profanity filters, etc.
+* **Multi-language support** (English, French, Spanish)
 
-> Design principle: **Headless first.** All validation lives in the core; UI packages are opt-in wrappers so you can swap MUI for any other UI kit later.
+> Design principle: **Headless first.** All validation lives in the core; framework adapters are opt-in so you can use any stack.
 
 ---
 
@@ -16,37 +18,66 @@ Minimal, framework-agnostic input defense for web apps and APIs, with optional *
 
 ```bash
 npm i @ameshkin/payload-patrol
-# optional peers
-npm i zod
-# if you’ll use the Phone component (UI wrapper)
-npm i libphonenumber-js
+
+# Optional peer dependencies
+npm i zod  # For Zod adapter
 ```
+
+---
+
+## 📚 Documentation
+
+### Core Features
+- **[Core Security Checks](.docs/features/CORE-CHECKS.md)** - SQL injection, XSS, HTML filtering, profanity, limits
+- **[Sentiment Analysis](.docs/features/SENTIMENT.md)** - Mood detection and user sentiment tracking
+
+### Adapters
+- **[Zod Integration](.docs/adapters/ZOD.md)** - Schema-level validation
+- **[Express Middleware](.docs/adapters/EXPRESS.md)** - Request validation for Express/Connect
+- **[Hono Middleware](.docs/adapters/HONO.md)** - Edge-ready validation for Cloudflare Workers/Bun/Deno
+
+### Examples
+- **[Mood Detector Component](.docs/examples/MOOD-DETECTOR.md)** - React sentiment analysis component
+
+### Data
+- **[Badwords Lists](data/README.md)** - Multi-language profanity lists (en, fr, es)
 
 ---
 
 ## Quick start (headless)
 
 ```ts
-import { createPatrol, auditPayload, registerProfanityList } from "@ameshkin/payload-patrol";
-
-registerProfanityList(["dang", "heck"]); // optional
+import { createPatrol } from "@ameshkin/payload-patrol";
 
 const patrol = createPatrol({
   blockSQLi: true,
   blockXSS: true,
   allowHTML: false,
+  checkProfanity: true,
   limit: { maxChars: 5000, maxWords: 800 }
 });
 
-const result = patrol.scan({
+const result = await patrol.scan({
   name: "<script>alert(1)</script>",
   comment: "hi -- drop table users;"
 });
 
 if (!result.ok) {
   console.log(result.issues);
-  // [{ path: ["name"], rule: "xss", ...}, { path: ["comment"], rule: "sqli", ...}]
+  // [{ path: ["name"], rule: "scripts", ...}, { path: ["comment"], rule: "sql", ...}]
 }
+```
+
+### Sentiment Analysis
+
+```ts
+import { analyzeSentiment } from "@ameshkin/payload-patrol";
+
+const feedback = "I love this product! Great customer service.";
+const analysis = analyzeSentiment(feedback);
+
+console.log(analysis.mood); // "positive"
+console.log(analysis.score); // 2
 ```
 
 ---
@@ -67,79 +98,48 @@ schema.parse({ name: "Alice", email: "alice@example.com" }); // throws on violat
 
 ---
 
-## UI Layer (optional): Super-components for React + MUI
+## React Components (Coming Soon)
 
-These are **thin wrappers** around MUI that wire in our headless validation, formatting, and UX sugar. You can use them directly, or just copy patterns into your own components.
-
-### `<Phone />` (international phone input)
-
-A polished phone input with:
-
-* Country flag and dropdown
-* Auto-formatting as you type
-* Country-aware validation
-* Emits E.164 by default
-* Accessible keyboard navigation
-* Server-safe: works SSR/CSR
+React/MUI components are planned for a future release. For now, you can use the headless core with your own components:
 
 ```tsx
-import { Phone } from "@ameshkin/payload-patrol/react/mui";
+import { useState, useEffect } from 'react';
+import { createPatrol } from '@ameshkin/payload-patrol';
+import { TextField } from '@mui/material';
 
-<Phone
-  country
-  flag
-  defaultCountry="US"
-  value={phone}
-  onChange={setPhone}
-  label="Phone"
-  helperText="Include country code"
-  required
-/>;
+function SafeTextField({ value, onChange, ...props }) {
+  const [error, setError] = useState('');
+  const patrol = createPatrol({ blockXSS: true, blockSQLi: true });
+  
+  useEffect(() => {
+    const check = async () => {
+      const result = await patrol.scan(value);
+      setError(result.ok ? '' : result.issues[0]?.message || 'Invalid input');
+    };
+    if (value) check();
+  }, [value]);
+  
+  return (
+    <TextField 
+      {...props}
+      value={value}
+      onChange={onChange}
+      error={!!error}
+      helperText={error}
+    />
+  );
+}
 ```
 
-**Why this design?**
-We build on `libphonenumber-js` for parsing/formatting/validation; it’s a lightweight rewrite of Google’s lib with smaller bundles and solid APIs, widely used in production phone inputs (e.g., `react-phone-number-input`). ([npmjs.com][1])
+**Planned Components:**
+- `<Phone />` - International phone input with libphonenumber-js
+- `<Text />` - Text field with validation and profanity filtering
+- `<Email />` - Email validation with MX hints
+- `<Password />` - Strength meter and breach check
+- `<Textarea />` - Word/char counters and auto-sanitize
+- `<URL />` - URL validation with allow/deny lists
 
-#### Alternatives we’ll interop/learn from
-
-* `react-phone-number-input`: modern, flag/country select variants, uses `libphonenumber-js`. Good DX, actively used. ([npmjs.com][2])
-* `react-phone-input-2`: highly customizable with country dropdown and flags; older, heavier, but popular. ([npmjs.com][3])
-* `intl-tel-input` (vanilla + wrappers): classic JS plugin with country dropdown, auto-detect, placeholders, comprehensive validation. Great feature reference; we’ll avoid its CSS/JS footprint in React apps but mimic key UX. ([intl-tel-input.com][4])
-* `google-libphonenumber`: authoritative upstream that powers Android; heavier than `libphonenumber-js`. ([GitHub][5])
-
-> Goal: **reuse** proven parsing/formatting (libphonenumber) and **borrow** UX details (searchable country list, one-flag strategy to keep bundle small) from established libs. ([GitHub][6])
-
-### `<Text />`
-
-A text field with optional profanity check, length guard, and HTML/script stripping. Passes all MUI props through.
-
-```tsx
-import { Text } from "@ameshkin/payload-patrol/react/mui";
-
-<Text
-  label="Display name"
-  profanity
-  maxLength={64}
-  allowHTML={false}
-  value={name}
-  onChange={setName}
-/>
-```
-
-Shorthand (dictionary integration):
-
-```tsx
-<Text type="text" profanity />
-```
-
-> Under the hood, `Text` calls the headless `auditPayload` on every change (debounced) and can either block, warn, or strip based on `adapter` mode.
-
-### Other planned super-components
-
-* `<Email />` with RFC-ish validation + MX-safe client hints
-* `<Password />` with strength meter and breach check hook (opt-in)
-* `<Textarea />` with word/char counters and auto-sanitize
-* `<URL />` with allow/deny hostname lists
+See [Mood Detector Example](.docs/examples/MOOD-DETECTOR.md) for a complete working component.
 
 ---
 
@@ -154,10 +154,12 @@ Shorthand (dictionary integration):
 
 This keeps validation central, enables non-React servers, and avoids lock-in.
 
-### Should we wrap MUI or pass props into its components?
+### Design Philosophy
 
-* **Best practice:** **export thin wrappers** for turnkey use **and** expose **hooks** (`usePatrolField`) so teams can wire validation into any input without wrappers.
-* Wrapping every MUI control creates churn; by focusing on high-value patterns (Phone, Email, Text), we minimize surface area while offering a generic hook for everything else.
+* **Headless first:** Core validation is framework-agnostic
+* **Opt-in adapters:** Use Zod, Express, Hono, or build your own
+* **Minimal dependencies:** Keep bundle sizes small
+* **Type-safe:** Full TypeScript support throughout
 
 ---
 
@@ -182,52 +184,66 @@ registerProfanityList(words: string[]): void;
 
 ---
 
-## API surface (React/MUI)
+## TypeScript Support
 
-```tsx
-// Phone
-type PhoneProps = {
-  country?: boolean;          // show country select
-  flag?: boolean;             // show selected flag
-  defaultCountry?: string;    // "US", "GB", ...
-  value?: string;             // accepts E.164 or national; emits E.164 by default
-  onChange?: (e164: string | undefined) => void;
-  format?: "E.164" | "national" | "international";
-  adapter?: "block" | "warn" | "strip";
-} & MuiTextFieldProps;
+Full type definitions included:
 
-// Text
-type TextProps = {
-  profanity?: boolean;
-  allowHTML?: boolean;
-  maxLength?: number;
-  adapter?: "block" | "warn" | "strip";
-} & MuiTextFieldProps;
+```typescript
+import type {
+  CheckName,
+  CheckResult,
+  CheckContext,
+  AdapterMode,
+  ScanResult,
+  SentimentResult
+} from '@ameshkin/payload-patrol';
 ```
 
 ---
 
-## Integration examples
+## Framework Integration
+
+### Next.js API Route
+
+```typescript
+import { createPatrol } from '@ameshkin/payload-patrol';
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const patrol = createPatrol({ blockSQLi: true, blockXSS: true });
+  const result = await patrol.scan(body);
+  
+  if (!result.ok) {
+    return Response.json({ errors: result.issues }, { status: 400 });
+  }
+  
+  // Process safe data
+  return Response.json({ success: true });
+}
+```
 
 ### With React Hook Form
 
 ```tsx
-const { control } = useForm();
+import { useForm } from 'react-hook-form';
+import { createPatrol } from '@ameshkin/payload-patrol';
 
-<Controller
-  name="phone"
-  control={control}
-  render={({ field, fieldState }) => (
-    <Phone {...field} country flag error={!!fieldState.error} helperText={fieldState.error?.message} />
-  )}
-/>
-```
+const patrol = createPatrol();
 
-### With Zod schema
-
-```ts
-const schema = z.object({
-  phone: z.string().min(1) // store E.164
+const { register, handleSubmit } = useForm({
+  resolver: async (values) => {
+    const result = await patrol.scan(values);
+    if (!result.ok) {
+      return {
+        values: {},
+        errors: result.issues.reduce((acc, issue) => {
+          acc[issue.path.join('.')] = { message: issue.message };
+          return acc;
+        }, {})
+      };
+    }
+    return { values, errors: {} };
+  }
 });
 ```
 
@@ -270,13 +286,40 @@ registerProfanityList(badwords);
 
 ---
 
+## What's Included
+
+✅ **Core Security Checks**
+- SQL injection detection
+- XSS/script filtering  
+- HTML sanitization
+- Profanity filtering (multi-language)
+- Length limits
+
+✅ **Sentiment Analysis**
+- Real-time mood detection
+- Positive/negative word tracking
+- Comparative scoring
+
+✅ **Adapters**
+- Zod schema validation
+- Express middleware
+- Hono middleware (edge-ready)
+
+✅ **Multi-Language Support**
+- English, French, Spanish badwords
+- Severity-based filtering (severe/mild)
+
 ## Roadmap
 
-* `@ameshkin/payload-patrol` (core) — v1
-* `@ameshkin/payload-patrol/react` — hooks
-* `@ameshkin/payload-patrol/react/mui` — `<Phone/>`, `<Text/>`, `<Email/>`, `<Password/>`
-* **Masks:** optional integration points for card numbers, SSNs, etc.
-* **Server adapters:** Hono/Express/Koa middlewares
+* ✅ Core validation engine
+* ✅ Zod adapter
+* ✅ Server middleware (Express, Hono)
+* ✅ Sentiment analysis
+* ✅ Multi-language profanity lists
+* 🚧 React hooks (`usePatrolField`, `useSentiment`)
+* 📋 MUI components (`<Phone/>`, `<Text/>`, `<Email/>`)
+* 📋 Additional language packs
+* 📋 Custom check marketplace
 
 ---
 
@@ -285,11 +328,11 @@ registerProfanityList(badwords);
 **Is this just a MUI wrapper?**
 No. The **core** is headless and framework-agnostic. The MUI layer is an optional thin wrapper for rapid adoption.
 
-**Can I use MUI TextField directly and just add validation?**
-Yes. Use the **headless hooks** or `auditPayload` in your own components. We provide `<Text/>` only to save you time.
+**Can I use this with any UI framework?**
+Yes! The core is completely framework-agnostic. Use `createPatrol()` or `auditPayload()` with any React, Vue, Svelte, or vanilla JS component.
 
-**Can I mix and match?**
-Absolutely—use `<Phone/>` for the complex UX, and plain MUI for the rest with `usePatrolField`.
+**Do I need all the features?**
+No. Import only what you need. Tree-shaking ensures unused code is removed from your bundle.
 
 ---
 
@@ -300,20 +343,10 @@ Absolutely—use `<Phone/>` for the complex UX, and plain MUI for the rest with 
 
 ---
 
-If this looks good, I’ll scaffold the repo layout next:
+## Contributing
 
-```
-/packages/core
-/packages/react
-/packages/react-mui
-/data/badwords.json
-```
+Contributions welcome! Please see our [Contributing Guide](CONTRIBUTING.md) (coming soon).
 
-…and then implement `<Phone/>`, `<Text/>`, `usePatrolField`, and the core validators exactly as specced here.
+## License
 
-[1]: https://npmjs.com/package/libphonenumber-js/v/1.2.6?utm_source=chatgpt.com "libphonenumber-js"
-[2]: https://www.npmjs.com/package/react-phone-number-input?utm_source=chatgpt.com "react-phone-number-input"
-[3]: https://www.npmjs.com/package/react-phone-input-2?utm_source=chatgpt.com "react-phone-input-2"
-[4]: https://intl-tel-input.com/?utm_source=chatgpt.com "International Telephone Input"
-[5]: https://github.com/google/libphonenumber?utm_source=chatgpt.com "google/libphonenumber"
-[6]: https://github.com/Blocknify/react-phone-number-input?utm_source=chatgpt.com "Blocknify/react-phone-number-input"
+MIT © Amir Meshkin

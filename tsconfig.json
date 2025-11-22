@@ -4,7 +4,8 @@
     "paths": {
       "@adapters/*": ["src/adapters/*"],
       "@data/*": ["data/*"],
-      "@lib/*": ["src/*"]
+      "@lib/*": ["src/lib/*"],
+      "@types": ["src/types"]
     },
     "resolveJsonModule": true,
     "types": ["vitest/globals"]

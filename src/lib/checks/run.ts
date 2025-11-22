@@ -1,5 +1,5 @@
 import { getCheck } from "./registry";
-import type { AdapterMode, CheckContext, CheckName, RunChecksOptions, RunChecksResult } from "./types";
+import type { AdapterMode, CheckContext, CheckName, RunChecksOptions, RunChecksResult } from "../../types";
 
 /**
  * runChecks

@@ -1,4 +1,4 @@
-import type { CheckFn } from "../types";
+import type { CheckFn } from "../../../types";
 
 const rx = [
   /<\s*script\b/i,

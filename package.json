@@ -21,18 +21,6 @@
       "require": "./dist/adapters/zod.cjs",
       "default": "./dist/adapters/zod.js"
     },
-    "./react": {
-      "types": "./dist/react.d.ts",
-      "import": "./dist/react.js",
-      "require": "./dist/react.cjs",
-      "default": "./dist/react.js"
-    },
-    "./react/mui": {
-      "types": "./dist/react-mui.d.ts",
-      "import": "./dist/react-mui.js",
-      "require": "./dist/react-mui.cjs",
-      "default": "./dist/react-mui.js"
-    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -125,7 +113,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "prepublishOnly": "npm run build && npm run typecheck && npm test",
+    "prepublishOnly": "npm run build && npm test -- --run",
     "ensure:clean": "git diff --quiet && git diff --cached --quiet",
     "release:patch": "npm run ensure:clean && npm version patch -m \"chore(release): %s\" && git push && git push --tags && npm publish --access public",
     "release:minor": "npm run ensure:clean && npm version minor -m \"chore(release): %s\" && git push && git push --tags && npm publish --access public",

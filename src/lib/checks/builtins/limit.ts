@@ -1,4 +1,4 @@
-import type { CheckFn } from "../types";
+import type { CheckFn } from "../../../types";
 
 export const limitCheck: CheckFn = (value, ctx) => {
   const maxChars = ctx?.limit?.maxChars ?? 0;

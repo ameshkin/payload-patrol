@@ -1,7 +1,6 @@
 const registry = new Map<string, { name: string; run: (v: string, ctx?: any) => any }>();
 
 export function registerCheck(name: string, run: (value: string, ctx?: any) => any) {
-  console.log("[checks] register:", name);
   registry.set(name, { name, run });
 }
 
