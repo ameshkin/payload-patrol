@@ -1,6 +1,8 @@
 {
   "name": "@ameshkin/payload-patrol",
   "version": "0.0.1",
+  "description": "Headless input defense (SQLi/XSS/profanity) with optional React/MUI super-components (Phone, Text) and Zod adapters.",
+  "license": "MIT",
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.cjs",
@@ -10,31 +12,91 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
     },
     "./adapters/zod": {
       "types": "./dist/adapters/zod.d.ts",
       "import": "./dist/adapters/zod.js",
-      "require": "./dist/adapters/zod.cjs"
+      "require": "./dist/adapters/zod.cjs",
+      "default": "./dist/adapters/zod.js"
     },
     "./react": {
       "types": "./dist/react.d.ts",
       "import": "./dist/react.js",
-      "require": "./dist/react.cjs"
-    }
+      "require": "./dist/react.cjs",
+      "default": "./dist/react.js"
+    },
+    "./react/mui": {
+      "types": "./dist/react-mui.d.ts",
+      "import": "./dist/react-mui.js",
+      "require": "./dist/react-mui.cjs",
+      "default": "./dist/react-mui.js"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "data"
   ],
+  "keywords": [
+    "security",
+    "validation",
+    "xss",
+    "sqli",
+    "profanity",
+    "zod",
+    "react",
+    "mui",
+    "phone",
+    "libphonenumber"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ameshkin/payload-patrol.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ameshkin/payload-patrol/issues"
+  },
+  "homepage": "https://github.com/ameshkin/payload-patrol#readme",
+  "author": "Amir Meshkin <amir.meshkin@gmail.com> (https://github.com/ameshkin)",
+  "engines": {
+    "node": ">=18.18 || >=20.11 || >=22",
+    "npm": ">=9.8.0"
+  },
+  "engineStrict": true,
+  "packageManager": "npm@10",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "registry": "https://registry.npmjs.org/"
+  },
   "peerDependencies": {
+    "@emotion/react": ">=11 <12",
+    "@emotion/styled": ">=11 <12",
+    "@mui/icons-material": ">=6 <8",
+    "@mui/material": ">=6 <8",
+    "libphonenumber-js": ">=1.11.0",
     "react": ">=18 <20",
     "react-dom": ">=18 <20",
     "zod": ">=3.23.0"
   },
   "peerDependenciesMeta": {
-    "zod": {
+    "@mui/material": {
+      "optional": true
+    },
+    "@emotion/react": {
+      "optional": true
+    },
+    "@emotion/styled": {
+      "optional": true
+    },
+    "@mui/icons-material": {
+      "optional": true
+    },
+    "libphonenumber-js": {
       "optional": true
     },
     "react": {
@@ -42,17 +104,19 @@
     },
     "react-dom": {
       "optional": true
+    },
+    "zod": {
+      "optional": true
     }
   },
   "devDependencies": {
     "@types/node": "^22.7.4",
     "@types/react": "^19.0.0",
-    "@vitest/coverage-v8": "2.1.9",
+    "@vitest/coverage-v8": "^4.0.6",
     "rimraf": "^6.0.1",
     "tsup": "^8.0.0",
     "typescript": "^5.6.3",
-    "vite-tsconfig-paths": "^5.1.2",
-    "vitest": "^2.1.9",
+    "vitest": "^4.0.6",
     "zod": "^3.23.8"
   },
   "scripts": {
@@ -62,9 +126,12 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "prepublishOnly": "npm run build && npm run typecheck && npm test",
-    "release:patch": "npm run ensure:clean && npm version patch && git push && git push --tags && npm publish --access public",
-    "release:minor": "npm run ensure:clean && npm version minor && git push && git push --tags && npm publish --access public",
-    "release:major": "npm run ensure:clean && npm version major && git push && git push --tags && npm publish --access public",
-    "ensure:clean": "git diff --quiet && git diff --cached --quiet"
+    "ensure:clean": "git diff --quiet && git diff --cached --quiet",
+    "release:patch": "npm run ensure:clean && npm version patch -m \"chore(release): %s\" && git push && git push --tags && npm publish --access public",
+    "release:minor": "npm run ensure:clean && npm version minor -m \"chore(release): %s\" && git push && git push --tags && npm publish --access public",
+    "release:major": "npm run ensure:clean && npm version major -m \"chore(release): %s\" && git push && git push --tags && npm publish --access public"
+  },
+  "dependencies": {
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }
