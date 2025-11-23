@@ -485,7 +485,8 @@ var severe_default = [
 ];
 
 // src/lib/checks/builtins/badwords.ts
-var defaultBadSet = new Set(severe_default.map((w) => w.toLowerCase()));
+var badwordsSevere = severe_default;
+var defaultBadSet = new Set(badwordsSevere.map((w) => w.toLowerCase()));
 var customBadwords = null;
 function registerBadwords(words) {
   customBadwords = new Set(words.map((w) => w.toLowerCase()));
@@ -495,15 +496,17 @@ var badwordsCheck = (value, ctx) => {
   const allow = new Set((ctx?.allowlist ?? []).map((w) => w.toLowerCase()));
   const tokens = value.toLowerCase().match(/[a-z0-9@.\-_'']+/g) ?? [];
   const hits = [];
-  for (const t of tokens) {
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
     if (allow.has(t)) continue;
     if (badSet.has(t)) hits.push(t);
   }
+  const uniqueHits = Array.from(new Set(hits));
   return {
     name: "badwords",
     ok: hits.length === 0,
-    message: hits.length ? `Contains blocked terms: ${[...new Set(hits)].slice(0, 5).join(", ")}` : void 0,
-    details: hits.length ? { hits } : void 0
+    message: hits.length ? `Contains blocked terms: ${uniqueHits.slice(0, 5).join(", ")}` : void 0,
+    details: hits.length ? { hits: uniqueHits } : void 0
   };
 };
 
@@ -566,11 +569,12 @@ var htmlCheck = (value) => {
     const tag = (m[1] || "").toLowerCase();
     if (!ALLOW.has(tag)) bad.push(tag);
   }
+  const uniqueBad = Array.from(new Set(bad));
   return {
     name: "html",
     ok: bad.length === 0,
-    message: bad.length ? `HTML not allowed: ${[...new Set(bad)].slice(0, 5).join(", ")}` : void 0,
-    details: bad.length ? { tags: bad } : void 0
+    message: bad.length ? `HTML not allowed: ${uniqueBad.slice(0, 5).join(", ")}` : void 0,
+    details: bad.length ? { tags: uniqueBad } : void 0
   };
 };
 

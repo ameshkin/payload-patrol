@@ -8,7 +8,7 @@ import {
   registerCheck,
   registerProfanityList,
   runChecks
-} from "./chunk-K43D3FTF.js";
+} from "./chunk-5OUZV3ZB.js";
 export {
   analyzeSentiment,
   auditPayload,

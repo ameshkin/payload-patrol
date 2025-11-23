@@ -9,12 +9,15 @@ export default defineConfig({
   ],
   format: ["esm", "cjs"],
   dts: {
+    resolve: true,
     compilerOptions: {
       module: "ESNext",
-      moduleResolution: "Bundler",
+      moduleResolution: "bundler",
       resolveJsonModule: true,
       jsx: "react-jsx",
       skipLibCheck: true,
+      esModuleInterop: true,
+      allowSyntheticDefaultImports: true,
     },
   },
   sourcemap: true,

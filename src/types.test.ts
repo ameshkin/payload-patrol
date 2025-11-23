@@ -8,7 +8,7 @@ import type {
   CheckFn,
   CheckResult,
   RunChecksResult,
-} from "@lib/types";
+} from "./types";
 
 describe("types smoke test", () => {
   it("accepts a valid CheckFn and CheckResult shape", () => {

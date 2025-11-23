@@ -11,10 +11,11 @@ export const htmlCheck: CheckFn = (value) => {
     const tag = (m[1] || "").toLowerCase();
     if (!ALLOW.has(tag)) bad.push(tag);
   }
+  const uniqueBad = Array.from(new Set(bad));
   return {
     name: "html",
     ok: bad.length === 0,
-    message: bad.length ? `HTML not allowed: ${[...new Set(bad)].slice(0, 5).join(", ")}` : undefined,
-    details: bad.length ? { tags: bad } : undefined,
+    message: bad.length ? `HTML not allowed: ${uniqueBad.slice(0, 5).join(", ")}` : undefined,
+    details: bad.length ? { tags: uniqueBad } : undefined,
   };
 };

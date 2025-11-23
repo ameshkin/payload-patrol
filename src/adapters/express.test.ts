@@ -1,10 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
-import type { Request, Response, NextFunction } from "express";
 
-// Mock express types
-vi.mock("express", () => ({
-  default: vi.fn(),
-}));
+// Mock express types - express is optional peer dependency
+// Type definitions will be available if @types/express is installed
 
 describe("Express Adapter - Smoke Tests", () => {
   it("should export patrolMiddleware", async () => {

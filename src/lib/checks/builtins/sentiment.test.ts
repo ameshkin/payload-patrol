@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { analyzeSentiment, sentimentCheck } from "./sentiment";
+import { unwrapCheckResult } from "../test-helpers";
 
 describe("Sentiment Analysis - Smoke Tests", () => {
   describe("analyzeSentiment", () => {
@@ -101,35 +102,35 @@ describe("Sentiment Analysis - Smoke Tests", () => {
   });
 
   describe("sentimentCheck", () => {
-    it("should always pass (informational only)", () => {
-      const result = sentimentCheck("I hate this terrible product");
+    it("should always pass (informational only)", async () => {
+      const result = await unwrapCheckResult(sentimentCheck("I hate this terrible product"));
       expect(result.ok).toBe(true);
       expect(result.name).toBe("sentiment");
     });
 
-    it("should provide detailed results", () => {
-      const result = sentimentCheck("I love this amazing product!");
+    it("should provide detailed results", async () => {
+      const result = await unwrapCheckResult(sentimentCheck("I love this amazing product!"));
       expect(result.details).toBeDefined();
       expect(result.details?.mood).toBe("positive");
       expect(result.details?.score).toBeDefined();
       expect(result.details?.comparative).toBeDefined();
     });
 
-    it("should include word lists in details", () => {
-      const result = sentimentCheck("I love this but hate that");
+    it("should include word lists in details", async () => {
+      const result = await unwrapCheckResult(sentimentCheck("I love this but hate that"));
       expect(result.details?.positive).toBeDefined();
       expect(result.details?.negative).toBeDefined();
       expect(Array.isArray(result.details?.positive)).toBe(true);
       expect(Array.isArray(result.details?.negative)).toBe(true);
     });
 
-    it("should include token count", () => {
-      const result = sentimentCheck("hello world");
+    it("should include token count", async () => {
+      const result = await unwrapCheckResult(sentimentCheck("hello world"));
       expect(result.details?.tokens).toBe(2);
     });
 
-    it("should work with empty string", () => {
-      const result = sentimentCheck("");
+    it("should work with empty string", async () => {
+      const result = await unwrapCheckResult(sentimentCheck(""));
       expect(result.ok).toBe(true);
       expect(result.details?.mood).toBe("neutral");
     });

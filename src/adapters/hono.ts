@@ -5,6 +5,7 @@
 
 // Type-only imports - hono is a peer dependency
 type Context = any;
+type Response = any; // Hono's Response type (from peer dependency)
 type MiddlewareHandler = (c: Context, next: () => Promise<void>) => Promise<Response | void>;
 import { createPatrol, type PatrolOptions } from "../index";
 
@@ -124,8 +125,8 @@ export function validateFields(
       }
       
       // Store sanitized data
-      if (options.adapter === "strip" && result.value) {
-        c.set("sanitizedBody", { ...body, ...result.value });
+      if (options.adapter === "strip" && result.value && typeof result.value === "object" && result.value !== null) {
+        c.set("sanitizedBody", { ...body, ...(result.value as Record<string, unknown>) });
       } else {
         c.set("sanitizedBody", body);
       }
