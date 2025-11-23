@@ -1,7 +1,12 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts", "src/adapters/zod.ts", "src/react.tsx"],
+  entry: [
+    "src/index.ts",
+    "src/adapters/zod.ts",
+    "src/adapters/express.ts",
+    "src/adapters/hono.ts",
+  ],
   format: ["esm", "cjs"],
   dts: {
     compilerOptions: {
@@ -9,12 +14,13 @@ export default defineConfig({
       moduleResolution: "Bundler",
       resolveJsonModule: true,
       jsx: "react-jsx",
+      skipLibCheck: true,
     },
   },
   sourcemap: true,
   clean: true,
   tsconfig: "tsconfig.build.json",
-  external: ["react", "react-dom"],
+  external: ["react", "react-dom", "express", "hono"],
   esbuildOptions(options) {
     options.alias = {
       "@lib": "./src",

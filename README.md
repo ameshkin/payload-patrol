@@ -27,17 +27,18 @@ npm i zod  # For Zod adapter
 
 ## 📚 Documentation
 
+All features include complete examples and usage guides:
+
 ### Core Features
-- **[Core Security Checks](.docs/features/CORE-CHECKS.md)** - SQL injection, XSS, HTML filtering, profanity, limits
-- **[Sentiment Analysis](.docs/features/SENTIMENT.md)** - Mood detection and user sentiment tracking
+- **[Core API](.docs/features/CORE-API.md)** - `createPatrol()`, `auditPayload()`, and core functions
+- **[Security Checks](.docs/features/CORE-CHECKS.md)** - SQL injection, XSS, HTML filtering, profanity, limits
+- **[Sentiment Analysis](.docs/features/SENTIMENT.md)** - Mood detection with React examples
+- **[Profanity Filtering](.docs/features/PROFANITY.md)** - Multi-language word lists and customization
 
-### Adapters
-- **[Zod Integration](.docs/adapters/ZOD.md)** - Schema-level validation
-- **[Express Middleware](.docs/adapters/EXPRESS.md)** - Request validation for Express/Connect
-- **[Hono Middleware](.docs/adapters/HONO.md)** - Edge-ready validation for Cloudflare Workers/Bun/Deno
-
-### Examples
-- **[Mood Detector Component](.docs/examples/MOOD-DETECTOR.md)** - React sentiment analysis component
+### Framework Adapters
+- **[Zod Integration](.docs/features/ZOD.md)** - Schema-level validation with examples
+- **[Express Middleware](.docs/features/EXPRESS.md)** - Request validation for Express/Connect
+- **[Hono Middleware](.docs/features/HONO.md)** - Edge-ready validation for Cloudflare Workers/Bun/Deno
 
 ### Data
 - **[Badwords Lists](data/README.md)** - Multi-language profanity lists (en, fr, es)
@@ -139,7 +140,7 @@ function SafeTextField({ value, onChange, ...props }) {
 - `<Textarea />` - Word/char counters and auto-sanitize
 - `<URL />` - URL validation with allow/deny lists
 
-See [Mood Detector Example](.docs/examples/MOOD-DETECTOR.md) for a complete working component.
+See [Sentiment Analysis](.docs/features/SENTIMENT.md) for complete React examples.
 
 ---
 
@@ -253,36 +254,13 @@ const { register, handleSubmit } = useForm({
 
 ### Dictionary files
 
-Put your profanity list at `data/badwords.json` and register it at startup.
-
-```ts
-import badwords from "../data/badwords.json" assert { type: "json" };
-registerProfanityList(badwords);
-```
-
-### Hooks
-
-* `usePatrolField({ value, adapter, checks })` → `{ value, setValue, issues, ok }`
-* `useProfanity({ value })` → `{ flagged: boolean, tokens: string[] }`
+See [Profanity Filtering](.docs/features/PROFANITY.md) for complete documentation on:
+- Loading custom word lists
+- Multi-language support
+- Severity-based filtering
+- Allowlist configuration
 
 ---
-
-## Comparison: existing phone input libraries (for reuse & reference)
-
-| Library                    | Core parser         | Country dropdown |    Flags | Notes                                                                              |
-| -------------------------- | ------------------- | ---------------: | -------: | ---------------------------------------------------------------------------------- |
-| `react-phone-number-input` | `libphonenumber-js` |              Yes | Optional | Modern, two variants; good docs and patterns to reuse. ([npmjs.com][2])            |
-| `react-phone-input-2`      | internal + data     |              Yes |      Yes | Very customizable, heavier/older but popular. ([npmjs.com][3])                     |
-| `intl-tel-input`           | internal + utils    |              Yes |      Yes | Vanilla plugin; React wrappers exist; great UX baseline. ([intl-tel-input.com][4]) |
-| `google-libphonenumber`    | Google              |              N/A |      N/A | Authoritative but heavier; we prefer `libphonenumber-js`. ([GitHub][5])            |
-| `libphonenumber-js`        | Lightweight rewrite |              N/A |      N/A | Our chosen core parser/formatter to keep bundle small. ([npmjs.com][1])            |
-
----
-
-## Performance & bundle size
-
-* **Flags:** avoid shipping all SVG flags by default; show only selected country’s flag to keep bundles small (pattern used upstream). ([GitHub][6])
-* **Parsing:** prefer `libphonenumber-js`’s “min metadata” build where possible. ([npmjs.com][1])
 
 ---
 
@@ -335,11 +313,6 @@ Yes! The core is completely framework-agnostic. Use `createPatrol()` or `auditPa
 No. Import only what you need. Tree-shaking ensures unused code is removed from your bundle.
 
 ---
-
-## Links
-
-* `data/badwords.json` (profanity dictionary you provide)
-* Upstreams we reference: `libphonenumber-js`, `react-phone-number-input`, `react-phone-input-2`, `intl-tel-input`. ([npmjs.com][1])
 
 ---
 

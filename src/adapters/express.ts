@@ -3,7 +3,10 @@
  * Lightweight request body validation
  */
 
-import type { Request, Response, NextFunction } from "express";
+// Type-only imports - express is a peer dependency
+type Request = any;
+type Response = any;
+type NextFunction = any;
 import { createPatrol, type PatrolOptions, type ScanResult } from "../index";
 
 export interface ExpressPatrolOptions extends PatrolOptions {

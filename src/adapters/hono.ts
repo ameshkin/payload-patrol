@@ -3,7 +3,9 @@
  * Lightweight validation for edge runtimes
  */
 
-import type { Context, MiddlewareHandler } from "hono";
+// Type-only imports - hono is a peer dependency
+type Context = any;
+type MiddlewareHandler = (c: Context, next: () => Promise<void>) => Promise<Response | void>;
 import { createPatrol, type PatrolOptions } from "../index";
 
 export interface HonoPatrolOptions extends PatrolOptions {

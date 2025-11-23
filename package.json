@@ -21,6 +21,18 @@
       "require": "./dist/adapters/zod.cjs",
       "default": "./dist/adapters/zod.js"
     },
+    "./adapters/express": {
+      "types": "./dist/adapters/express.d.ts",
+      "import": "./dist/adapters/express.js",
+      "require": "./dist/adapters/express.cjs",
+      "default": "./dist/adapters/express.js"
+    },
+    "./adapters/hono": {
+      "types": "./dist/adapters/hono.d.ts",
+      "import": "./dist/adapters/hono.js",
+      "require": "./dist/adapters/hono.cjs",
+      "default": "./dist/adapters/hono.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -112,8 +124,10 @@
     "build": "tsup --config tsup.config.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
+    "test:run": "vitest --run",
     "test:watch": "vitest --watch",
-    "prepublishOnly": "npm run build && npm test -- --run",
+    "test:coverage": "vitest --run --coverage",
+    "prepublishOnly": "npm run build && npm run test:run",
     "ensure:clean": "git diff --quiet && git diff --cached --quiet",
     "release:patch": "npm run ensure:clean && npm version patch -m \"chore(release): %s\" && git push && git push --tags && npm publish --access public",
     "release:minor": "npm run ensure:clean && npm version minor -m \"chore(release): %s\" && git push && git push --tags && npm publish --access public",
