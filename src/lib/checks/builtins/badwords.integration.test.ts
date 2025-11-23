@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { registerBadwords } from "./badwords";
 import { badwordsCheck } from "./badwords";
-import { unwrapCheckResult } from "../test-helpers";
+import { unwrapCheckResult } from "../test-helpers.js";
 import enSevereData from "../../../../data/en/severe.json";
 
 const enSevere = enSevereData as string[];

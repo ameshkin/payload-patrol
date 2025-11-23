@@ -16,7 +16,40 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pr_ci:
+  # Linting and type checking (fast feedback)
+  lint_and_typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm i; fi
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate || true
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint (if available)
+        run: |
+          if npm run | grep -q "lint"; then
+            npm run lint
+          else
+            echo "No lint script found, skipping"
+          fi
+        continue-on-error: true
+
+  # Comprehensive testing across Node versions
+  test_matrix:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -40,16 +73,11 @@ jobs:
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm i; fi
 
-      - name: Audit dependencies
-        run: npm audit --audit-level=moderate || true
-
-      - name: Type check
-        run: npm run typecheck
-
-      - name: Run tests
-        run: npm run test:run
+      - name: Run all tests
+        run: npm run test:run -- --reporter=verbose
 
       - name: Run tests with coverage
+        if: matrix.node-version == '22.x'
         run: npm run test:coverage
 
       - name: Build
@@ -59,6 +87,8 @@ jobs:
         run: |
           npm pack --dry-run
           ls -lah dist/
+          echo "=== Package structure ==="
+          find dist -type f -name "*.js" -o -name "*.cjs" -o -name "*.d.ts" -o -name "*.d.cts" | sort
 
       - name: Upload diagnostics on failure
         if: failure()
@@ -68,6 +98,7 @@ jobs:
           path: |
             npm-debug.log*
             coverage/
+            dist/
           if-no-files-found: ignore
           retention-days: 1
 

@@ -5,7 +5,7 @@ import { sqlCheck } from "./sql";
 import { scriptsCheck } from "./scripts";
 import { htmlCheck } from "./html";
 import { limitCheck } from "./limit";
-import { unwrapCheckResult } from "../test-helpers";
+import { unwrapCheckResult } from "../test-helpers.js";
 
 describe("Built-in Checks - Smoke Tests", () => {
   beforeAll(() => {

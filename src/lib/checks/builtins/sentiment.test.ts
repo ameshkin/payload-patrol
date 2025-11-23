@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { analyzeSentiment, sentimentCheck } from "./sentiment";
-import { unwrapCheckResult } from "../test-helpers";
+import { unwrapCheckResult } from "../test-helpers.js";
 
 describe("Sentiment Analysis - Smoke Tests", () => {
   describe("analyzeSentiment", () => {
