@@ -1,6 +1,6 @@
 # Payload Patrol
 
-Minimal, framework-agnostic input defense for web apps and APIs, with optional React components (coming soon).
+Minimal, framework-agnostic input defense for web apps and APIs.
 
 * Detects common **SQLi/XSS** patterns
 * **Custom deny rules** and **optional profanity** checks
@@ -99,61 +99,26 @@ schema.parse({ name: "Alice", email: "alice@example.com" }); // throws on violat
 
 ---
 
-## React Components (Coming Soon)
+## Examples
 
-React/MUI components are planned for a future release. For now, you can use the headless core with your own components:
+See the [examples](./examples/) directory for complete usage examples:
 
-```tsx
-import { useState, useEffect } from 'react';
-import { createPatrol } from '@ameshkin/payload-patrol';
-import { TextField } from '@mui/material';
-
-function SafeTextField({ value, onChange, ...props }) {
-  const [error, setError] = useState('');
-  const patrol = createPatrol({ blockXSS: true, blockSQLi: true });
-  
-  useEffect(() => {
-    const check = async () => {
-      const result = await patrol.scan(value);
-      setError(result.ok ? '' : result.issues[0]?.message || 'Invalid input');
-    };
-    if (value) check();
-  }, [value]);
-  
-  return (
-    <TextField 
-      {...props}
-      value={value}
-      onChange={onChange}
-      error={!!error}
-      helperText={error}
-    />
-  );
-}
-```
-
-**Planned Components:**
-- `<Phone />` - International phone input with libphonenumber-js
-- `<Text />` - Text field with validation and profanity filtering
-- `<Email />` - Email validation with MX hints
-- `<Password />` - Strength meter and breach check
-- `<Textarea />` - Word/char counters and auto-sanitize
-- `<URL />` - URL validation with allow/deny lists
-
-See [Sentiment Analysis](.docs/features/SENTIMENT.md) for complete React examples.
+- [Basic Usage](./examples/basic-usage.md) - Core API examples
+- [Zod Integration](./examples/zod-integration.md) - Schema validation
+- [Express Middleware](./examples/express-middleware.md) - Server-side validation
+- [Hono Middleware](./examples/hono-middleware.md) - Edge runtime validation
+- [Sentiment Analysis](./examples/sentiment-analysis.md) - Mood detection
+- [Custom Checks](./examples/custom-checks.md) - Extending validation
+- [Profanity Filtering](./examples/profanity-filtering.md) - Content moderation
 
 ---
 
 ## Architecture
 
-* **Core (headless):** scanning/sanitization (`auditPayload`, `createPatrol`), profanity dictionary loader, adapters (Zod).
-* **UI (React/MUI):** very thin wrappers that:
+* **Core (headless):** scanning/sanitization (`auditPayload`, `createPatrol`), profanity dictionary loader, adapters (Zod, Express, Hono).
+* **Framework adapters:** Thin wrappers that integrate with popular frameworks while keeping validation logic centralized.
 
-    1. Render an underlying MUI control,
-    2. Call headless validation on value changes/blur,
-    3. Map results → MUI error/HelperText, optionally mutate value when `adapter="strip"`.
-
-This keeps validation central, enables non-React servers, and avoids lock-in.
+This keeps validation central, enables any framework, and avoids lock-in.
 
 ### Design Philosophy
 
@@ -294,8 +259,7 @@ See [Profanity Filtering](.docs/features/PROFANITY.md) for complete documentatio
 * ✅ Server middleware (Express, Hono)
 * ✅ Sentiment analysis
 * ✅ Multi-language profanity lists
-* 🚧 React hooks (`usePatrolField`, `useSentiment`)
-* 📋 MUI components (`<Phone/>`, `<Text/>`, `<Email/>`)
+* ✅ Comprehensive examples
 * 📋 Additional language packs
 * 📋 Custom check marketplace
 

@@ -144,6 +144,22 @@ export function createPatrol(options: PatrolOptions = {}) {
     value: unknown,
     opts?: { adapter?: AdapterMode }
   ): Promise<ScanResult> {
+    // Protect against prototype pollution at top level only
+    if (value && typeof value === "object" && !Array.isArray(value) && value.constructor === Object) {
+      const keys = Object.keys(value);
+      // Only reject if these are direct top-level keys (prototype pollution attempt)
+      if (keys.includes("__proto__") || keys.includes("constructor") || keys.includes("prototype")) {
+        return {
+          ok: false,
+          issues: [{
+            path: [],
+            rule: "scripts" as CheckName,
+            message: "Prototype pollution attempt detected",
+            details: { reason: "prototype_pollution" },
+          }],
+        };
+      }
+    }
     const scanAdapter = opts?.adapter ?? adapter;
     const scanOptions: RunChecksOptions = {
       ...runOptions,

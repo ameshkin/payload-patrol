@@ -12,22 +12,54 @@ export async function runChecks(
   ctx?: CheckContext,
   opts?: RunChecksOptions
 ): Promise<RunChecksResult> {
+  // Validate input type
+  if (typeof value !== "string") {
+    return {
+      ok: false,
+      results: [{
+        name: "limit" as CheckName,
+        ok: false,
+        message: "Value must be a string",
+      }],
+      value,
+    };
+  }
+
+  // Limit number of checks to prevent DoS
+  const maxChecks = 100;
+  const limitedChecks = checks.slice(0, maxChecks);
+
   const mode: AdapterMode = opts?.adapter ?? "block";
   const stopOnFirstBlock = opts?.stopOnFirstBlock ?? true;
 
   let current = value;
   const results = [];
 
-  for (const name of checks) {
-    const { run } = getCheck(name);
-    const res = await Promise.resolve(run(current, ctx));
-    results.push(res);
+  for (const name of limitedChecks) {
+    try {
+      const check = getCheck(name);
+      const { run } = check;
+      const res = await Promise.resolve(run(current, ctx));
+      results.push(res);
 
-    if (!res.ok) {
-      if (mode === "strip" && typeof res.value === "string") {
-        current = res.value;
-        continue;
+      if (!res.ok) {
+        if (mode === "strip" && typeof res.value === "string") {
+          current = res.value;
+          continue;
+        }
+        if (mode === "block" && stopOnFirstBlock) {
+          return { ok: false, results, value: current };
+        }
       }
+    } catch (error) {
+      // If a check throws, record it as a failure
+      results.push({
+        name,
+        ok: false,
+        message: error instanceof Error ? error.message : "Check execution failed",
+        details: { error: "execution_failed" },
+      });
+      
       if (mode === "block" && stopOnFirstBlock) {
         return { ok: false, results, value: current };
       }

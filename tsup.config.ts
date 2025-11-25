@@ -14,7 +14,6 @@ export default defineConfig({
       module: "ESNext",
       moduleResolution: "bundler",
       resolveJsonModule: true,
-      jsx: "react-jsx",
       skipLibCheck: true,
       esModuleInterop: true,
       allowSyntheticDefaultImports: true,
@@ -23,7 +22,9 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   tsconfig: "tsconfig.build.json",
-  external: ["react", "react-dom", "express", "hono"],
+  external: ["express", "hono", "zod"],
+  splitting: true,
+  treeshake: true,
   esbuildOptions(options) {
     options.alias = {
       "@lib": "./src",

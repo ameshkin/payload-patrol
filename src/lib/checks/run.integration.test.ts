@@ -95,7 +95,12 @@ describe("runChecks - Integration Tests", () => {
         throw new Error("Check error");
       });
 
-      await expect(runChecks("test", ["throws"])).rejects.toThrow("Check error");
+      // runChecks now catches errors and returns a failure result
+      const result = await runChecks("test", ["throws"]);
+      expect(result.ok).toBe(false);
+      expect(result.results.length).toBe(1);
+      expect(result.results[0].ok).toBe(false);
+      expect(result.results[0].message).toContain("Check error");
     });
 
     it("should handle async check that rejects", async () => {
@@ -103,7 +108,12 @@ describe("runChecks - Integration Tests", () => {
         throw new Error("Async error");
       });
 
-      await expect(runChecks("test", ["rejects"])).rejects.toThrow("Async error");
+      // runChecks now catches errors and returns a failure result
+      const result = await runChecks("test", ["rejects"]);
+      expect(result.ok).toBe(false);
+      expect(result.results.length).toBe(1);
+      expect(result.results[0].ok).toBe(false);
+      expect(result.results[0].message).toContain("Async error");
     });
   });
 

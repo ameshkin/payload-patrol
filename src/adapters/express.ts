@@ -51,7 +51,18 @@ export function patrolMiddleware(options: ExpressPatrolOptions = {}) {
       const result = await patrol.scan(req.body);
       
       if (!result.ok) {
-        return onError(result, req, res);
+        // Create error object for Express error handling
+        const error: any = new Error("Validation failed");
+        error.type = "payload-patrol";
+        error.status = 400;
+        error.issues = result.issues;
+        // Call onError if provided, otherwise pass to next
+        if (options.onError) {
+          onError(result, req, res);
+        } else {
+          next(error);
+        }
+        return;
       }
       
       // If strip mode, replace body with sanitized version
@@ -111,7 +122,14 @@ export function validateFields(
       const result = await patrol.scan(toValidate);
       
       if (!result.ok) {
-        return onError(result, req, res);
+        // Create error object for Express error handling
+        const error: any = new Error("Validation failed");
+        error.type = "payload-patrol";
+        error.status = 400;
+        error.issues = result.issues;
+        // Always call onError (default or custom), which handles the response
+        onError(result, req, res);
+        return;
       }
       
       // Apply sanitized values back to body

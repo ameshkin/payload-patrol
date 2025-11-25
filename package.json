@@ -1,7 +1,7 @@
 {
   "name": "@ameshkin/payload-patrol",
   "version": "0.0.1",
-  "description": "Headless input defense (SQLi/XSS/profanity) with optional React/MUI super-components (Phone, Text) and Zod adapters.",
+  "description": "Headless input defense (SQLi/XSS/profanity) with Zod, Express, and Hono adapters.",
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
@@ -48,10 +48,9 @@
     "sqli",
     "profanity",
     "zod",
-    "react",
-    "mui",
-    "phone",
-    "libphonenumber"
+    "express",
+    "hono",
+    "edge"
   ],
   "repository": {
     "type": "git",
@@ -74,44 +73,23 @@
     "registry": "https://registry.npmjs.org/"
   },
   "peerDependencies": {
-    "@emotion/react": ">=11 <12",
-    "@emotion/styled": ">=11 <12",
-    "@mui/icons-material": ">=6 <8",
-    "@mui/material": ">=6 <8",
-    "libphonenumber-js": ">=1.11.0",
-    "react": ">=18 <20",
-    "react-dom": ">=18 <20",
-    "zod": ">=3.23.0"
+    "zod": ">=3.23.0",
+    "express": ">=4.0.0",
+    "hono": ">=3.0.0"
   },
   "peerDependenciesMeta": {
-    "@mui/material": {
-      "optional": true
-    },
-    "@emotion/react": {
-      "optional": true
-    },
-    "@emotion/styled": {
-      "optional": true
-    },
-    "@mui/icons-material": {
-      "optional": true
-    },
-    "libphonenumber-js": {
-      "optional": true
-    },
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    },
     "zod": {
+      "optional": true
+    },
+    "express": {
+      "optional": true
+    },
+    "hono": {
       "optional": true
     }
   },
   "devDependencies": {
     "@types/node": "^22.7.4",
-    "@types/react": "^19.0.0",
     "@vitest/coverage-v8": "^4.0.6",
     "rimraf": "^6.0.1",
     "tsup": "^8.0.0",
@@ -129,9 +107,14 @@
     "test:coverage": "vitest --run --coverage",
     "prepublishOnly": "npm run build && npm run test:run",
     "ensure:clean": "git diff --quiet && git diff --cached --quiet",
-    "release:patch": "npm run ensure:clean && npm version patch -m \"chore(release): %s\" && git push && git push --tags && npm publish --access public",
-    "release:minor": "npm run ensure:clean && npm version minor -m \"chore(release): %s\" && git push && git push --tags && npm publish --access public",
-    "release:major": "npm run ensure:clean && npm version major -m \"chore(release): %s\" && git push && git push --tags && npm publish --access public"
+    "publish:dry-run": "npm run prepublishOnly && npm pack --dry-run",
+    "publish:check": "npm run prepublishOnly && npm pack",
+    "publish:public": "npm run prepublishOnly && npm publish --access public --provenance",
+    "publish:beta": "npm run prepublishOnly && npm publish --access public --provenance --tag beta",
+    "publish:next": "npm run prepublishOnly && npm publish --access public --provenance --tag next",
+    "release:patch": "npm run ensure:clean && npm version patch -m \"chore(release): %s\" && git push && git push --tags && npm run publish:public",
+    "release:minor": "npm run ensure:clean && npm version minor -m \"chore(release): %s\" && git push && git push --tags && npm run publish:public",
+    "release:major": "npm run ensure:clean && npm version major -m \"chore(release): %s\" && git push && git push --tags && npm run publish:public"
   },
   "dependencies": {
     "vite-tsconfig-paths": "^5.1.4"

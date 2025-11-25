@@ -1,6 +1,8 @@
 import type { CheckFn } from "../../../types";
+import { safeRegexTest, validateInputLength } from "../security";
 
 // Heuristic detection of SQL injection-y patterns.
+// Patterns are designed to be efficient and avoid ReDoS
 const suspicious = [
   /\bunion\b\s+\bselect\b/i,
   /\bselect\b.+\bfrom\b/i,
@@ -17,7 +19,24 @@ const suspicious = [
 ];
 
 export const sqlCheck: CheckFn = (value) => {
-  const hits = suspicious.filter(rx => rx.test(value)).map(rx => rx.source).slice(0, 5);
+  // Validate input length first
+  if (!validateInputLength(value)) {
+    return {
+      name: "sql",
+      ok: false,
+      message: "Input too long for validation",
+      details: { reason: "length_exceeded" },
+    };
+  }
+
+  const hits: string[] = [];
+  for (const rx of suspicious) {
+    if (safeRegexTest(rx, value)) {
+      hits.push(rx.source);
+      if (hits.length >= 5) break; // Limit to 5 matches
+    }
+  }
+
   return {
     name: "sql",
     ok: hits.length === 0,
