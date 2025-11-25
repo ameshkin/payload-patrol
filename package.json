@@ -68,9 +68,8 @@
   "engineStrict": true,
   "packageManager": "npm@10",
   "publishConfig": {
-    "access": "public",
-    "provenance": true,
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npm.pkg.github.com",
+    "provenance": false
   },
   "peerDependencies": {
     "zod": ">=3.23.0",
@@ -109,12 +108,14 @@
     "ensure:clean": "git diff --quiet && git diff --cached --quiet",
     "publish:dry-run": "npm run prepublishOnly && npm pack --dry-run",
     "publish:check": "npm run prepublishOnly && npm pack",
-    "publish:public": "npm run prepublishOnly && npm publish --access public --provenance",
-    "publish:beta": "npm run prepublishOnly && npm publish --access public --provenance --tag beta",
-    "publish:next": "npm run prepublishOnly && npm publish --access public --provenance --tag next",
-    "release:patch": "npm run ensure:clean && npm version patch -m \"chore(release): %s\" && git push && git push --tags && npm run publish:public",
-    "release:minor": "npm run ensure:clean && npm version minor -m \"chore(release): %s\" && git push && git push --tags && npm run publish:public",
-    "release:major": "npm run ensure:clean && npm version major -m \"chore(release): %s\" && git push && git push --tags && npm run publish:public"
+    "publish:github": "npm run prepublishOnly && npm publish --provenance=false",
+    "publish:public": "npm run prepublishOnly && npm publish --access public --provenance=false --registry https://registry.npmjs.org/",
+    "publish:beta": "npm run prepublishOnly && npm publish --access public --provenance=false --tag beta --registry https://registry.npmjs.org/",
+    "publish:next": "npm run prepublishOnly && npm publish --access public --provenance=false --tag next --registry https://registry.npmjs.org/",
+    "release": "npm publish --provenance=false",
+    "release:patch": "npm run ensure:clean && npm version patch -m \"chore(release): %s\" && git push && git push --tags && npm run publish:github",
+    "release:minor": "npm run ensure:clean && npm version minor -m \"chore(release): %s\" && git push && git push --tags && npm run publish:github",
+    "release:major": "npm run ensure:clean && npm version major -m \"chore(release): %s\" && git push && git push --tags && npm run publish:github"
   },
   "dependencies": {
     "vite-tsconfig-paths": "^5.1.4"

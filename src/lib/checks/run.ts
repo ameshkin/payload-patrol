@@ -66,7 +66,10 @@ export async function runChecks(
     }
   }
 
-  const ok = results.every(r => r.ok || mode === "strip");
+  // In warn mode, continue processing but still return ok: false if issues found
+  // In strip mode, return ok: true if we successfully processed (even if we stripped)
+  // In block mode, return ok: false if any check failed
+  const ok = mode === "strip" ? true : results.every(r => r.ok);
   return { ok, results, value: current };
 }
 

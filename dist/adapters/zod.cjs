@@ -1,6 +1,6 @@
 'use strict';
 
-var chunkF4UC5QKS_cjs = require('../chunk-F4UC5QKS.cjs');
+var chunkKTJLVFMU_cjs = require('../chunk-KTJLVFMU.cjs');
 var zod = require('zod');
 
 function zSafeString(opts = {}) {
@@ -32,7 +32,7 @@ function zSafeString(opts = {}) {
       if (blockXSS) checks.push("scripts");
       if (!allowHTML) checks.push("html");
       if (maxChars || maxWords) checks.push("limit");
-      const result = await chunkF4UC5QKS_cjs.auditPayload(value, {
+      const result = await chunkKTJLVFMU_cjs.auditPayload(value, {
         adapter,
         checks,
         context: {
@@ -54,7 +54,7 @@ function zSafeString(opts = {}) {
 function zSafeObject(shape, opts = {}) {
   return zod.z.object(shape).refine(
     async (value) => {
-      const result = await chunkF4UC5QKS_cjs.auditPayload(value, {
+      const result = await chunkKTJLVFMU_cjs.auditPayload(value, {
         adapter: opts.adapter || "block",
         checks: [
           ...opts.checkProfanity ? ["badwords"] : [],
@@ -82,7 +82,7 @@ function zStripUnsafe(opts = {}) {
     const checks = [];
     if (opts.blockXSS !== false) checks.push("scripts");
     if (!opts.allowHTML) checks.push("html");
-    const result = await chunkF4UC5QKS_cjs.auditPayload(value, {
+    const result = await chunkKTJLVFMU_cjs.auditPayload(value, {
       adapter: "strip",
       checks,
       context: {

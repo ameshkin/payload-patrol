@@ -171,16 +171,15 @@ export function createPatrol(options: PatrolOptions = {}) {
     // Handle different value types
     if (typeof value === "string") {
       const result = await runChecks(value, checks, context, scanOptions);
-      if (!result.ok) {
-        for (const r of result.results) {
-          if (!r.ok) {
-            issues.push({
-              path: [],
-              rule: r.name,
-              message: r.message,
-              details: r.details,
-            });
-          }
+      // Collect all failed checks as issues (even in warn mode)
+      for (const r of result.results) {
+        if (!r.ok) {
+          issues.push({
+            path: [],
+            rule: r.name,
+            message: r.message,
+            details: r.details,
+          });
         }
       }
       return {
@@ -198,17 +197,16 @@ export function createPatrol(options: PatrolOptions = {}) {
       for (let i = 0; i < value.length; i++) {
         if (typeof value[i] === "string") {
           const result = await runChecks(value[i], checks, context, scanOptions);
-          if (!result.ok) {
-            allOk = false;
-            for (const r of result.results) {
-              if (!r.ok) {
-                issues.push({
-                  path: [i],
-                  rule: r.name,
-                  message: r.message,
-                  details: r.details,
-                });
-              }
+          // Collect all failed checks as issues
+          for (const r of result.results) {
+            if (!r.ok) {
+              allOk = false;
+              issues.push({
+                path: [i],
+                rule: r.name,
+                message: r.message,
+                details: r.details,
+              });
             }
           }
           scannedArray.push(scanAdapter === "strip" ? result.value : value[i]);
@@ -244,17 +242,16 @@ export function createPatrol(options: PatrolOptions = {}) {
       for (const [key, val] of Object.entries(value)) {
         if (typeof val === "string") {
           const result = await runChecks(val, checks, context, scanOptions);
-          if (!result.ok) {
-            allOk = false;
-            for (const r of result.results) {
-              if (!r.ok) {
-                issues.push({
-                  path: [key],
-                  rule: r.name,
-                  message: r.message,
-                  details: r.details,
-                });
-              }
+          // Collect all failed checks as issues
+          for (const r of result.results) {
+            if (!r.ok) {
+              allOk = false;
+              issues.push({
+                path: [key],
+                rule: r.name,
+                message: r.message,
+                details: r.details,
+              });
             }
           }
           scannedObj[key] = scanAdapter === "strip" ? result.value : val;
