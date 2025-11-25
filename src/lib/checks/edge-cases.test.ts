@@ -155,8 +155,10 @@ describe("Edge Cases: Check Registry", () => {
 
 describe("Edge Cases: runChecks with Invalid Input", () => {
   it("Given an invalid check name, When running checks, Then it should handle gracefully", async () => {
-    // Invalid checks throw when getting, so this will throw
-    await expect(runChecks("test", ["nonexistent" as any], {})).rejects.toThrow();
+    // Invalid checks are caught and returned as failed results, not thrown
+    const result = await runChecks("test", ["nonexistent" as any], {});
+    expect(result.ok).toBe(false);
+    expect(result.results.some((r) => r.name === "nonexistent" && !r.ok)).toBe(true);
   });
 
   it("Given an empty checks array, When running checks, Then it should pass", async () => {

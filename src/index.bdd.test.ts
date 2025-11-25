@@ -234,18 +234,23 @@ describe("Feature: Prototype Pollution Protection", () => {
   describe("Scenario: User attempts prototype pollution attack", () => {
     it("Given a malicious user, When they send __proto__ in object, Then it should be rejected", async () => {
       const patrol = createPatrol();
-      const result = await patrol.scan({
-        __proto__: { isAdmin: true },
+      // Create object with __proto__ using Object.defineProperty to actually set it as a property
+      const maliciousObj: any = {};
+      Object.defineProperty(maliciousObj, "__proto__", {
+        value: { isAdmin: true },
+        enumerable: true,
+        configurable: true,
       });
+      const result = await patrol.scan(maliciousObj);
       // Prototype pollution protection should reject this
       expect(result.ok).toBe(false);
       expect(result.issues.length).toBeGreaterThan(0);
-      // Check if it's the prototype pollution issue or a scripts check issue
+      // Check if it's the prototype pollution issue
       const hasPrototypeIssue = result.issues.some((i) => 
         i.details?.reason === "prototype_pollution" || 
         i.message?.includes("prototype pollution")
       );
-      expect(hasPrototypeIssue || result.issues.length > 0).toBe(true);
+      expect(hasPrototypeIssue).toBe(true);
     });
 
     it("Given a malicious user, When they send constructor in object, Then it should be rejected", async () => {

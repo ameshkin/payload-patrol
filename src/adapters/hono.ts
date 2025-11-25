@@ -51,6 +51,11 @@ export function patrol(options: HonoPatrolOptions = {}): MiddlewareHandler {
       const result = await patrolInstance.scan(body);
       
       if (!result.ok) {
+        // In strip mode, even if there are issues, we still sanitize and continue
+        if (options.adapter === "strip" && result.value) {
+          c.set("sanitizedBody", result.value);
+          return next();
+        }
         return c.json(
           {
             error: "Invalid input",
@@ -115,6 +120,11 @@ export function validateFields(
       const result = await patrolInstance.scan(toValidate);
       
       if (!result.ok) {
+        // In strip mode, even if there are issues, we still sanitize and continue
+        if (options.adapter === "strip" && result.value && typeof result.value === "object" && result.value !== null) {
+          c.set("sanitizedBody", { ...body, ...(result.value as Record<string, unknown>) });
+          return next();
+        }
         return c.json(
           {
             error: "Invalid input",

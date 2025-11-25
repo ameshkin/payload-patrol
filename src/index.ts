@@ -146,9 +146,15 @@ export function createPatrol(options: PatrolOptions = {}) {
   ): Promise<ScanResult> {
     // Protect against prototype pollution at top level only
     if (value && typeof value === "object" && !Array.isArray(value) && value.constructor === Object) {
-      const keys = Object.keys(value);
-      // Only reject if these are direct top-level keys (prototype pollution attempt)
-      if (keys.includes("__proto__") || keys.includes("constructor") || keys.includes("prototype")) {
+      const obj = value as Record<string, unknown>;
+      // Check for dangerous keys using hasOwnProperty to catch direct properties
+      // __proto__ is a special property that might not be enumerable, so we check directly
+      const keys = Object.keys(obj);
+      const hasProto = Object.prototype.hasOwnProperty.call(obj, "__proto__") || keys.includes("__proto__");
+      const hasConstructor = Object.prototype.hasOwnProperty.call(obj, "constructor") || keys.includes("constructor");
+      const hasPrototype = Object.prototype.hasOwnProperty.call(obj, "prototype") || keys.includes("prototype");
+      
+      if (hasProto || hasConstructor || hasPrototype) {
         return {
           ok: false,
           issues: [{
