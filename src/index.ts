@@ -145,25 +145,31 @@ export function createPatrol(options: PatrolOptions = {}) {
     opts?: { adapter?: AdapterMode }
   ): Promise<ScanResult> {
     // Protect against prototype pollution at top level only
-    if (value && typeof value === "object" && !Array.isArray(value) && value.constructor === Object) {
+    // Check for plain objects (including Object.create(null) which has undefined constructor)
+    if (value && typeof value === "object" && !Array.isArray(value) && value !== null) {
       const obj = value as Record<string, unknown>;
-      // Check for dangerous keys using hasOwnProperty to catch direct properties
-      // __proto__ is a special property that might not be enumerable, so we check directly
-      const keys = Object.keys(obj);
-      const hasProto = Object.prototype.hasOwnProperty.call(obj, "__proto__") || keys.includes("__proto__");
-      const hasConstructor = Object.prototype.hasOwnProperty.call(obj, "constructor") || keys.includes("constructor");
-      const hasPrototype = Object.prototype.hasOwnProperty.call(obj, "prototype") || keys.includes("prototype");
+      // Check if it's a plain object (either {} or Object.create(null))
+      const isPlainObject = value.constructor === Object || value.constructor === undefined;
       
-      if (hasProto || hasConstructor || hasPrototype) {
-        return {
-          ok: false,
-          issues: [{
-            path: [],
-            rule: "scripts" as CheckName,
-            message: "Prototype pollution attempt detected",
-            details: { reason: "prototype_pollution" },
-          }],
-        };
+      if (isPlainObject) {
+        // Check for dangerous keys using hasOwnProperty to catch direct properties
+        // __proto__ is a special property that might not be enumerable, so we check directly
+        const keys = Object.keys(obj);
+        const hasProto = Object.prototype.hasOwnProperty.call(obj, "__proto__") || keys.includes("__proto__");
+        const hasConstructor = Object.prototype.hasOwnProperty.call(obj, "constructor") || keys.includes("constructor");
+        const hasPrototype = Object.prototype.hasOwnProperty.call(obj, "prototype") || keys.includes("prototype");
+        
+        if (hasProto || hasConstructor || hasPrototype) {
+          return {
+            ok: false,
+            issues: [{
+              path: [],
+              rule: "scripts" as CheckName,
+              message: "Prototype pollution attempt detected",
+              details: { reason: "prototype_pollution" },
+            }],
+          };
+        }
       }
     }
     const scanAdapter = opts?.adapter ?? adapter;
@@ -216,7 +222,8 @@ export function createPatrol(options: PatrolOptions = {}) {
             }
           }
           scannedArray.push(scanAdapter === "strip" ? result.value : value[i]);
-        } else if (typeof value[i] === "object") {
+        } else if (value[i] !== null && typeof value[i] === "object") {
+          // Skip null (typeof null === "object" in JS, but we don't need to scan it)
           const nested = await scan(value[i], opts);
           if (!nested.ok) {
             allOk = false;
@@ -261,7 +268,8 @@ export function createPatrol(options: PatrolOptions = {}) {
             }
           }
           scannedObj[key] = scanAdapter === "strip" ? result.value : val;
-        } else if (typeof val === "object") {
+        } else if (val !== null && typeof val === "object") {
+          // Skip null (typeof null === "object" in JS, but we don't need to scan it)
           const nested = await scan(val, opts);
           if (!nested.ok) {
             allOk = false;

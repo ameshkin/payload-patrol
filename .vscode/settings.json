@@ -1,0 +1,10 @@
+{
+  "cursor.ai.autoApprove": {
+    "fileOperations": true,
+    "terminalCommands": true,
+    "toolCalls": true
+  },
+  "cursor.chat.autoApprove": true,
+  "cursor.terminal.autoApprove": true
+}
+

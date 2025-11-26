@@ -74,6 +74,16 @@ export function patrol(options: HonoPatrolOptions = {}): MiddlewareHandler {
       
       return next();
     } catch (error) {
+      // Log error for debugging, but don't crash the request
+      // Use try-catch to handle environments where console might not be available
+      try {
+        // eslint-disable-next-line no-console
+        if (typeof console !== "undefined" && console.error) {
+          console.error("[payload-patrol] Error in patrol middleware:", error);
+        }
+      } catch {
+        // Ignore console errors
+      }
       return next();
     }
   };
@@ -143,6 +153,16 @@ export function validateFields(
       
       return next();
     } catch (error) {
+      // Log error for debugging, but don't crash the request
+      // Use try-catch to handle environments where console might not be available
+      try {
+        // eslint-disable-next-line no-console
+        if (typeof console !== "undefined" && console.error) {
+          console.error("[payload-patrol] Error in validateFields middleware:", error);
+        }
+      } catch {
+        // Ignore console errors
+      }
       return next();
     }
   };
