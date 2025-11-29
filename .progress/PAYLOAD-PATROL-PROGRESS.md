@@ -157,7 +157,7 @@ All planned features have been implemented, tested, and documented. The package 
 
 ### Ready for Integration With
 - ✅ **agent-handler** - TypeScript-only package, fully compatible
-- ✅ **smart-cart** - Can be used for input validation
+- ✅ **nova** - Can be used for input validation
 - ✅ **Any Node.js/Edge runtime** - Framework-agnostic design
 
 ---

@@ -1,4 +1,4 @@
-# Smart Cart Feature Implementation Progress
+# Nova Feature Implementation Progress
 
 **Last Updated**: 2025-11-24 08:30 PM EST  
 **Status**: In Progress - Actively Implementing Features  
@@ -413,7 +413,7 @@ This document tracks the implementation status of all features organized by the 
 - [x] API endpoint for issue types (`/api/jira/issue-types`)
 - [x] Webhook endpoint (`/api/jira/webhooks`)
 - [x] Admin UI for JIRA configuration (`/admin/settings/jira`)
-- [x] Status synchronization (JIRA → Smart Cart)
+- [x] Status synchronization (JIRA → Nova)
 
 #### Remaining
 - [ ] Database-backed mappings (currently uses env vars)

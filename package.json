@@ -105,17 +105,21 @@
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --run --coverage",
     "prepublishOnly": "npm run build && npm run test:run",
+    "publish:all": "npm run build && npm run test:run && npm version patch -m \"chore(release): %s\" && git push --follow-tags && npm publish --provenance=false",
     "ensure:clean": "git diff --quiet && git diff --cached --quiet",
     "publish:dry-run": "npm run prepublishOnly && npm pack --dry-run",
     "publish:check": "npm run prepublishOnly && npm pack",
-    "publish:github": "npm run prepublishOnly && npm publish --provenance=false",
     "publish:public": "npm run prepublishOnly && npm publish --access public --provenance=false --registry https://registry.npmjs.org/",
     "publish:beta": "npm run prepublishOnly && npm publish --access public --provenance=false --tag beta --registry https://registry.npmjs.org/",
     "publish:next": "npm run prepublishOnly && npm publish --access public --provenance=false --tag next --registry https://registry.npmjs.org/",
+    "publish:github": "npm run prepublishOnly && npm publish --provenance=false",
     "release": "npm publish --provenance=false",
     "release:patch": "npm run ensure:clean && npm version patch -m \"chore(release): %s\" && git push && git push --tags && npm run publish:github",
     "release:minor": "npm run ensure:clean && npm version minor -m \"chore(release): %s\" && git push && git push --tags && npm run publish:github",
-    "release:major": "npm run ensure:clean && npm version major -m \"chore(release): %s\" && git push && git push --tags && npm run publish:github"
+    "release:major": "npm run ensure:clean && npm version major -m \"chore(release): %s\" && git push && git push --tags && npm run publish:github",
+    "orchestrator:ci": "ts-node ./scripts/orchestrator-ci.ts",
+    "clean-build": "bash ./scripts/orchestrator-clean-build.sh",
+    "orchestrator:clean-build": "bash ./scripts/orchestrator-clean-build.sh"
   },
   "dependencies": {
     "vite-tsconfig-paths": "^5.1.4"

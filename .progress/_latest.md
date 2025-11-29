@@ -73,7 +73,7 @@ This maintenance run verified the package is production-ready with all tests pas
 The package is **production-ready** and ready for:
 - npm publish
 - Integration with agent-handler
-- Integration with smart-cart
+- Integration with nova
 
 No immediate action items. Package is stable and complete.
 

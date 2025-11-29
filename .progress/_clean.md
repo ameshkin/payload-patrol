@@ -117,7 +117,7 @@ Every maintenance run, conceptually:
        * Mismatched generics.
        * Obvious dead or unreachable code that blocks compilation.
 
-Domain-level focus (especially for commerce projects like Smart Cart):
+Domain-level focus (especially for commerce projects like Nova):
 
 * Tenants / stores and isolation (no cross-tenant data leakage).
 * Products, variants, pricing, and stock.
@@ -184,7 +184,7 @@ Under `.progress/`, the standard structure is:
 
 * This is where active work items live, grouped by area.
 
-* For example, for Smart Cart or similar projects, you might maintain files or subfolders for:
+* For example, for Nova or similar projects, you might maintain files or subfolders for:
 
   * `PLUGINS`
   * `GENERAL`
@@ -311,7 +311,7 @@ When modifying or adding UI components:
 
 * Preserve the project’s visual language:
 
-  * Spacing, typography, color palette (e.g. dark, electric blue for Smart Cart).
+  * Spacing, typography, color palette (e.g. dark, electric blue for Nova).
   * Consistent use of layout primitives (`Grid`, `Stack`, `Box`).
 * Prefer small, reusable components over huge monoliths.
 * Respect existing patterns for:
@@ -422,7 +422,7 @@ Include:
 // ⬇️ OpenAPI/Swagger sync reminder for all projects
 
 /**
- * Smart Cart uses OpenAPI 3.0.3 with Swagger UI for API documentation.
+ * Nova uses OpenAPI 3.0.3 with Swagger UI for API documentation.
  *
  * Whenever you add, move, or remove an API route under:
  *   - src/app/api/**/route.ts
