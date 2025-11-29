@@ -15,6 +15,13 @@ concurrency:
   group: pr-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  packages: read
+
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   # Linting and type checking (fast feedback)
   lint_and_typecheck:

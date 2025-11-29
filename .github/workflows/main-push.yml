@@ -15,9 +15,11 @@ concurrency:
 
 permissions:
   contents: read
+  packages: read
 
 env:
   CI: true
+  NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   # Linting and type checking
