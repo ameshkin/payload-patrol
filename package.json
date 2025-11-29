@@ -1,6 +1,6 @@
 {
   "name": "@ameshkin/payload-patrol",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Headless input defense (SQLi/XSS/profanity) with Zod, Express, and Hono adapters.",
   "license": "MIT",
   "type": "module",
