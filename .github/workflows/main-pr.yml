@@ -36,6 +36,15 @@ jobs:
           node-version: 22.x
           cache: npm
 
+      - name: Configure npm for GitHub Packages
+        run: |
+          echo "@ameshkin:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> ~/.npmrc
+          echo "@ameshkin/nextcrumbs:registry=https://registry.npmjs.org" >> ~/.npmrc
+          echo "always-auth=true" >> ~/.npmrc
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install dependencies
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm i; fi
@@ -75,6 +84,15 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
+
+      - name: Configure npm for GitHub Packages
+        run: |
+          echo "@ameshkin:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> ~/.npmrc
+          echo "@ameshkin/nextcrumbs:registry=https://registry.npmjs.org" >> ~/.npmrc
+          echo "always-auth=true" >> ~/.npmrc
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         run: |

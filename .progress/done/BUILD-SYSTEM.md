@@ -49,8 +49,8 @@ Complete build system with ESM, CJS, and TypeScript declarations.
 ### ✅ Exports
 ```json
 {
-  ".": "./dist/index.js",
-  "./adapters/zod": "./dist/adapters/zod.js"
+  ".": "./public/index.js",
+  "./adapters/zod": "./public/adapters/zod.js"
 }
 ```
 

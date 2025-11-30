@@ -145,10 +145,10 @@ All features documented in `.progress/done/` have been verified as implemented a
 ### package.json Exports
 ```json
 {
-  ".": "./dist/index.js" ✅
-  "./adapters/zod": "./dist/adapters/zod.js" ✅
-  "./adapters/express": "./dist/adapters/express.js" ✅
-  "./adapters/hono": "./dist/adapters/hono.js" ✅
+  ".": "./public/index.js" ✅
+  "./adapters/zod": "./public/adapters/zod.js" ✅
+  "./adapters/express": "./public/adapters/express.js" ✅
+  "./adapters/hono": "./public/adapters/hono.js" ✅
 }
 ```
 

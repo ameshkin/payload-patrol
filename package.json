@@ -5,33 +5,33 @@
   "license": "MIT",
   "type": "module",
   "sideEffects": false,
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./public/index.cjs",
+  "module": "./public/index.js",
+  "types": "./public/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.js"
+      "types": "./public/index.d.ts",
+      "import": "./public/index.js",
+      "require": "./public/index.cjs",
+      "default": "./public/index.js"
     },
     "./adapters/zod": {
-      "types": "./dist/adapters/zod.d.ts",
-      "import": "./dist/adapters/zod.js",
-      "require": "./dist/adapters/zod.cjs",
-      "default": "./dist/adapters/zod.js"
+      "types": "./public/adapters/zod.d.ts",
+      "import": "./public/adapters/zod.js",
+      "require": "./public/adapters/zod.cjs",
+      "default": "./public/adapters/zod.js"
     },
     "./adapters/express": {
-      "types": "./dist/adapters/express.d.ts",
-      "import": "./dist/adapters/express.js",
-      "require": "./dist/adapters/express.cjs",
-      "default": "./dist/adapters/express.js"
+      "types": "./public/adapters/express.d.ts",
+      "import": "./public/adapters/express.js",
+      "require": "./public/adapters/express.cjs",
+      "default": "./public/adapters/express.js"
     },
     "./adapters/hono": {
-      "types": "./dist/adapters/hono.d.ts",
-      "import": "./dist/adapters/hono.js",
-      "require": "./dist/adapters/hono.cjs",
-      "default": "./dist/adapters/hono.js"
+      "types": "./public/adapters/hono.d.ts",
+      "import": "./public/adapters/hono.js",
+      "require": "./public/adapters/hono.cjs",
+      "default": "./public/adapters/hono.js"
     },
     "./package.json": "./package.json"
   },
@@ -72,9 +72,9 @@
     "provenance": false
   },
   "peerDependencies": {
-    "zod": ">=3.23.0",
     "express": ">=4.0.0",
-    "hono": ">=3.0.0"
+    "hono": ">=3.0.0",
+    "zod": ">=3.23.0"
   },
   "peerDependenciesMeta": {
     "zod": {
@@ -88,6 +88,7 @@
     }
   },
   "devDependencies": {
+    "@ameshkin/jira-mate": "^0.1.17",
     "@types/node": "^22.7.4",
     "@vitest/coverage-v8": "^4.0.6",
     "rimraf": "^6.0.1",
@@ -119,7 +120,8 @@
     "release:major": "npm run ensure:clean && npm version major -m \"chore(release): %s\" && git push && git push --tags && npm run publish:github",
     "orchestrator:ci": "ts-node ./scripts/orchestrator-ci.ts",
     "clean-build": "bash ./scripts/orchestrator-clean-build.sh",
-    "orchestrator:clean-build": "bash ./scripts/orchestrator-clean-build.sh"
+    "orchestrator:clean-build": "bash ./scripts/orchestrator-clean-build.sh",
+    "jira:projects": "node scripts/jira-projects.js"
   },
   "dependencies": {
     "vite-tsconfig-paths": "^5.1.4"
