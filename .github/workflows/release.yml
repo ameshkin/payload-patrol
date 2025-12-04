@@ -35,7 +35,16 @@ jobs:
           node-version: 22.x
           cache: npm
 
+      - name: Sync lockfile
+
+
+        run: npm install
+
+
+
       - name: Install dependencies
+
+
         run: npm ci
 
       - name: Verify tag format
@@ -112,7 +121,16 @@ jobs:
           cache: npm
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Sync lockfile
+
+
+        run: npm install
+
+
+
       - name: Install dependencies
+
+
         run: npm ci
 
       - name: Build

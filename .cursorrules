@@ -1,24 +1,306 @@
-# Cursor AI Rules for payload-patrol
+# Cursor AI Rules - Standard Practices
+# Updated: 2024-12-01
 
-## Auto-approve common operations
-- Automatically approve file reads/writes for source files
-- Automatically approve terminal commands for build/test scripts
-- Automatically approve dependency installations
-- Skip confirmation for non-destructive operations
+## Authentication & Package Registry
 
-## Code style
-- Use TypeScript strict mode
-- Prefer async/await over promises
-- Use descriptive variable names
-- Add JSDoc comments for public APIs
+### GitHub Packages
+- ALWAYS use `GH_PAT` environment variable for GitHub Package Registry authentication
+- NEVER create local `.npmrc` files - rely on global `~/.npmrc`
+- Global config location: `~/.npmrc` should contain:
+  ```
+  @ameshkin:registry=https://npm.pkg.github.com
+  //npm.pkg.github.com/:_authToken=${GH_PAT}
+  ```
+- In GitHub Actions workflows, use:
+  ```yaml
+  env:
+    GH_PAT: ${{ secrets.GH_PAT }}
+  ```
+- NEVER use `GITHUB_TOKEN` or `NODE_AUTH_TOKEN` - we standardize on `GH_PAT`
 
-## Testing
-- Run tests before committing
-- Maintain 100% test coverage for critical paths
-- Use BDD-style tests where appropriate
+## Dependency Management
+
+### Version Pinning
+- **Prisma:** ALWAYS use version 7.x (currently 7.0.1)
+  - Use `overrides` in package.json to force Prisma 7:
+    ```json
+    "overrides": {
+      "prisma": "7.0.1",
+      "@prisma/client": "7.0.1",
+      "**/prisma": "7.0.1",
+      "**/@prisma/client": "7.0.1"
+    }
+    ```
+- **MUI (Material-UI):** ALWAYS use version 7.x (currently 7.0.0+)
+  - Pin in package.json:
+    ```json
+    "@mui/material": "^7.0.0",
+    "@mui/icons-material": "^7.0.0",
+    "@mui/system": "^7.0.0"
+    ```
+- **React:** Use 18.x (stable)
+- **Next.js:** Use 15.x or latest stable
+- **TypeScript:** Use 5.x
+
+### Package Installation
+- NEVER run `npm audit fix --force` - it will downgrade Prisma
+- Use `npm run audit:fix` instead (creates safe audit script)
+- NEVER manually edit `package-lock.json`
+- If lock file is out of sync:
+  1. Delete it: `rm package-lock.json`
+  2. Reinstall: `npm install`
+  3. Commit the new lock file
+
+### Dependency Resolution
+- Use `legacy-peer-deps=true` in `.npmrc` if peer dependency conflicts occur
+- Use `overrides` field to force specific versions across entire dependency tree
+- Use `resolutions` field for yarn/pnpm compatibility
+
+## TypeScript Standards
+
+### Type Checking
+- ALWAYS run `npm run typecheck` BEFORE:
+  - `npm install` or `npm ci`
+  - Building (`npm run build`)
+  - Publishing (`npm publish`)
+  - Running clean scripts
+  - Any orchestrator scripts
+- Add `prebuild` hook: `"prebuild": "npm run typecheck"`
+- Fail fast on type errors - don't waste time on broken code
+
+### TypeScript Configuration
+- Use strict mode: `"strict": true`
+- Enable `noEmit` for type checking: `"noEmit": true` in tsconfig
+- Use path aliases for clean imports
+- Always define return types on exported functions
+
+## Script Standards
+
+### Required Scripts in package.json
+```json
+{
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "prebuild": "npm run typecheck",
+    "build": "tsup",
+    "clean": "npm run typecheck && rm -rf dist node_modules .next",
+    "audit:fix": "npm audit fix --omit=dev --package-lock-only",
+    "dev": "next dev",
+    "test": "vitest",
+    "lint": "eslint ."
+  }
+}
+```
+
+### Orchestrator Scripts
+- ALL orchestrator scripts must start with typecheck
+- Pattern:
+  ```bash
+  #!/bin/bash
+  set -e
+  
+  echo "🔍 Type checking..."
+  npm run typecheck || {
+    echo "❌ Fix TypeScript errors first"
+    exit 1
+  }
+  
+  # ... rest of script
+  ```
+
+## Code Quality
+
+### Linting & Formatting
+- Use ESLint with TypeScript parser
+- Use Prettier for formatting (if applicable)
+- No unused variables or imports
+- Consistent import ordering
+
+### Testing
+- Write tests for all utility functions
+- Use Vitest for unit tests
+- Use Playwright for e2e tests
+- Test coverage should be >80% for critical paths
+
+### Error Handling
+- Always use try-catch for async operations
+- Provide meaningful error messages
+- Log errors properly (don't swallow them)
+- Use proper HTTP status codes in APIs
+
+## Git & CI/CD
+
+### Commit Standards
+- Use conventional commits: `feat:`, `fix:`, `chore:`, `docs:`
+- Keep commits atomic and focused
+- Run typecheck before committing
+- Never commit `node_modules/` or `.env` files
+
+### GitHub Actions
+- Always use typecheck as first step
+- Use `npm ci` in CI (not `npm install`)
+- Set proper environment variables (GH_PAT)
+- Cache node_modules for faster builds
+- Fail fast - typecheck before install
+
+### Example Workflow
+```yaml
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      # TYPECHECK FIRST - fail fast
+      - name: Type Check
+        run: npm run typecheck
+      
+      - name: Install
+        run: npm ci
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+      
+      - name: Build
+        run: npm run build
+      
+      - name: Test
+        run: npm test
+```
+
+## Project Structure
+
+### Required Files
+- `package.json` with proper scripts
+- `tsconfig.json` with strict mode
+- `.gitignore` (include node_modules, .env, dist)
+- `README.md` with setup instructions
+- `.cursorrules` (this file)
+
+### Optional but Recommended
+- `.nvmrc` or `.node-version` for Node version
+- `.editorconfig` for consistent formatting
+- `vitest.config.ts` for test configuration
+- `.github/workflows/ci.yml` for CI/CD
 
 ## Security
-- Never commit secrets or tokens
-- Use environment variables for sensitive data
-- Validate all user inputs
+
+### Environment Variables
+- NEVER commit `.env` files
+- Use `.env.example` for documentation
+- Store secrets in GitHub Secrets
+- Use `dotenv` for local development
+
+### Dependencies
+- Audit regularly with `npm run audit:fix`
+- Keep dependencies up to date (but test first)
+- Review dependency licenses
+- Avoid dependencies with known vulnerabilities
+
+## Performance
+
+### Build Optimization
+- Use tree-shaking (ES modules)
+- Minimize bundle size
+- Use dynamic imports for code splitting
+- Optimize images and assets
+
+### Runtime Optimization
+- Avoid unnecessary re-renders (React)
+- Use memoization where appropriate
+- Optimize database queries
+- Cache API responses when possible
+
+## Documentation
+
+### Code Comments
+- Use JSDoc for exported functions
+- Explain WHY, not WHAT
+- Document complex algorithms
+- Keep comments up to date
+
+### README Requirements
+- Installation instructions
+- Environment setup
+- Available scripts
+- API documentation (if applicable)
+- Troubleshooting section
+
+## Anti-Patterns to Avoid
+
+### ❌ NEVER Do This
+- Run `npm audit fix --force` (downgrades Prisma)
+- Create local `.npmrc` files (use global)
+- Skip typecheck before building
+- Manually edit `package-lock.json`
+- Use `any` type in TypeScript
+- Commit generated files (dist, .next, etc.)
+- Use `console.log` in production code
+- Ignore ESLint warnings
+
+### ✅ ALWAYS Do This
+- Run typecheck first
+- Use GH_PAT for authentication
+- Pin critical dependencies (Prisma, MUI)
+- Write tests for new features
+- Update documentation
+- Use proper error handling
+- Follow conventional commits
+- Review your own PRs before submitting
+
+## Troubleshooting
+
+### Lock File Out of Sync
+```bash
+rm package-lock.json
+npm install
+```
+
+### Prisma Version Wrong
+Check package.json has overrides forcing 7.0.1
+
+### Authentication Failed
+Verify `GH_PAT` is set:
+```bash
+echo $GH_PAT | head -c 10
+```
+
+### TypeScript Errors
+Run typecheck to see all errors:
+```bash
+npm run typecheck
+```
+
+### Node Modules Corrupted
+Nuclear clean:
+```bash
+rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install
+```
+
+## Quick Reference
+
+### Safe Commands
+- `npm install` - Add/update dependencies
+- `npm ci` - Clean install (CI only)
+- `npm run typecheck` - Check TypeScript
+- `npm run audit:fix` - Safe audit fix
+- `npm test` - Run tests
+- `npm run build` - Build project
+
+### Dangerous Commands (Avoid)
+- `npm audit fix --force` - Will downgrade Prisma
+- Editing `package-lock.json` manually
+- Running install without typecheck first
+
+---
+
+## Project-Specific Notes
+
+Add any project-specific rules or exceptions below:
 
