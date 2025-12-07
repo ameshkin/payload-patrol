@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2025-12-07T05:01:27.077Z",
+  "packages": [
+    {
+      "name": "glob",
+      "version": "5.0.2",
+      "direct": false,
+      "via": [
+        {
+          "path": "/Users/amirmeshkin/_code/my-npm-packages/payload-patrol",
+          "parents": [
+            "@ameshkin/jira-mate@0.1.17",
+            "@ameshkin/agent-handler@0.1.10",
+            "archiver@7.0.1",
+            "archiver-utils@5.0.2"
+          ]
+        },
+        {
+          "path": "/Users/amirmeshkin/_code/my-npm-packages/payload-patrol",
+          "parents": [
+            "rimraf@6.1.2"
+          ]
+        }
+      ],
+      "action": "Transitive dependency - upgrade parent package to latest version",
+      "status": "transitive"
+    }
+  ],
+  "warnings": []
+}
