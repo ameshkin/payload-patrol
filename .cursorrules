@@ -116,6 +116,27 @@
 - No unused variables or imports
 - Consistent import ordering
 
+### Special Characters in Strings
+- **ALWAYS escape special characters in JSX/TSX strings**
+- Common characters that MUST be escaped:
+  - Apostrophes: Use `&apos;`, `&lsquo;`, `&rsquo;`, or `'` instead of `'`
+  - Quotes: Use `&quot;`, `&ldquo;`, `&rdquo;` instead of `"` or `"`
+  - Dashes: Use `&mdash;` or `&ndash;` for em/en dashes
+  - Ampersands: Use `&amp;` instead of `&`
+- Examples:
+  ```tsx
+  // ❌ BAD
+  <Typography>You don't have an account</Typography>
+  <Typography>It's working</Typography>
+  
+  // ✅ GOOD
+  <Typography>You don&apos;t have an account</Typography>
+  <Typography>It&apos;s working</Typography>
+  <Typography>You can&apos;t do that</Typography>
+  ```
+- This applies to ALL packages and ALL files (frontend, backend, scripts, etc.)
+- ESLint rule `react/no-unescaped-entities` enforces this
+
 ### Testing
 - Write tests for all utility functions
 - Use Vitest for unit tests
